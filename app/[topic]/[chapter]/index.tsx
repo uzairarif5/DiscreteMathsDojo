@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useFonts, Dekko_400Regular } from '@expo-google-fonts/dekko';
 import { Acme_400Regular } from '@expo-google-fonts/acme';
@@ -9,28 +9,17 @@ import { WebView } from 'react-native-webview';
 const Topic = () => {
   const { topic, chapter } = useLocalSearchParams() as { topic: string, chapter: string};
   const [text, changeText] = useState(null); 
-  const [counter, increaseCount] = useState(-1);
+  const [counter, changeCounter] = useState(-1);
 
   let [fontsLoaded, fontError] = useFonts({Dekko_400Regular, Acme_400Regular});
 
   if (!fontsLoaded && !fontError) return null;
 
   if(!text) {
-    fetch(`https://raw.githubusercontent.com/uzairarif5/DiscreteMathsContent/master/${topic}/${chapter}/1.json?dateForNoCache=${Date.now()}`) 
+    fetch(`https://raw.githubusercontent.com/uzairarif5/DiscreteMathsContent/master/${topic}/${chapter}.json?dateForNoCache=${Date.now()}`) 
     .then(response => response.json())
     .then(res => changeText(res));
-
     return null;
-  }
-
-  let bodyContent = null
-  let qArr = text[1];
-  let aArr = text[2];
-  if(counter > -1){
-    bodyContent = getWebView(`<div style="min-height: 80vh">${qArr[counter % qArr.length]}</div><br/><p><u>Answer:</u></p>${aArr[counter % aArr.length]}`);
-  }
-  else{
-    bodyContent = getWebView(text[0]);
   }
 
   return (
@@ -55,8 +44,8 @@ const Topic = () => {
           }
         }}
       />
-      {bodyContent}
-      <StyledButton increaseCount={increaseCount} count={counter}/>
+      <BodyContent counter={counter} text={text}/>
+      <StyledButton changeCounter={changeCounter} counter={counter}/>
     </>
   );
 }
@@ -73,13 +62,64 @@ const StyledButton = (props) => {
 
   return (
     <View style={styles.buttonOutside}>
-      <Pressable onPress={()=>{props.increaseCount(val => val+1)}} style={styles.button}>
+      <Pressable onPress={()=>{props.changeCounter(val => val +1)}} style={styles.button}>
         <Text style={styles.buttonText}>
-          {(props.count > -1) ? "More Questions ->" : "Start Practice ->"}
+          {(props.counter > -1) ? "More Questions ->" : "Start Practice ->"}
         </Text>
       </Pressable>
     </View>
   )
+}
+
+function BodyContent(props){
+  const [curAns, changeAns] = useState(null);
+
+  useEffect(()=>{
+    changeAns(null);
+  }, [props.counter]);
+
+  if(props.counter > -1){
+    let questionAnswerArr = props.text.slice(1);
+    //counter variable will always increment when next button is pressed
+    let curPos = props.counter % questionAnswerArr.length;
+    if(curAns){
+      return getWebView(`
+        <div style="min-height: 85vh">
+          ${questionAnswerArr[curPos][0]}
+        </div>
+        <p style="font-size:26px"><u>Answer:</u></p>
+        ${curAns}
+      `);
+    }
+    else{
+      if (questionAnswerArr[curPos].length > 1)
+        if(questionAnswerArr[curPos][1].slice(0,5) === "FETCH")
+          fetchAnswer(changeAns, questionAnswerArr[curPos][1].slice(6));
+        else changeAns(questionAnswerArr[curPos][1]);
+      else changeAns("<p>Answer not available right now.</p>");
+      return null;
+    };
+  }
+  else return getWebView(props.text[0]);
+}
+
+function fetchAnswer(changeAns, link){
+  let linkPieces = link.split("/");
+  fetch("https://www.deriveit.net/infoStore/getArticleContent", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({topic: linkPieces[0], subTopic: linkPieces[1], article: linkPieces[2]}),
+  })
+  .then(res => res.json())
+  .then(res => {
+    let newArr = res[1].slice(1).map(elem => {
+      if(elem[0] == "pmain") return `<p>${elem[1]}</p>`;
+      else if (elem[0] == "displayFormula") return `<div>${elem[1]}</div>`;
+      else return "<p>ERROR RENDER THIS: please report</p>";
+    });
+    changeAns(newArr.join(""));
+  })
+  .catch(() => changeAns("<p>Answer not available right now.</p>"));
 }
 
 function getWebView(text){
@@ -107,7 +147,6 @@ function getWebView(text){
     style={{width:"100%", backgroundColor: pageBackground}}
   />
 }
-
 
 export const styles = StyleSheet.create({
   main: {

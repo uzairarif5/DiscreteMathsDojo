@@ -35,7 +35,7 @@ function LinksComp(props){
   const [topicContent, changeTC] = useState(null);
 
   if(!topicContent){
-    fetch(`https://api.github.com/repos/uzairarif5/DiscreteMathsContent/contents/${props.topic}`) 
+    fetch(`https://raw.githubusercontent.com/uzairarif5/DiscreteMathsContent/master/${props.topic}/order.json`) 
     .then(response => response.json())
     .then(res => changeTC(res));
 
@@ -44,9 +44,7 @@ function LinksComp(props){
   
   return <View style={styles.chaptersContainer}>
     {topicContent.map((item, num) => {
-      return ((item["name"] === "image.png") || (item["name"] === "order.json")) ?
-      null :
-      <StyledButton text={item["name"].replaceAll("_"," ")} route={`${props.topic}/${item["name"]}`} key={num}/>
+      return <StyledButton text={item} route={`${props.topic}/${item}`} key={num}/>;
     })}
   </View>
 
