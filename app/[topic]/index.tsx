@@ -62,7 +62,7 @@ const StyledButton = (props) => {
 
   return (
     <Pressable onPress={()=>{router.push(props.route)}} style={styles.button}>
-      <Text style={styles.buttonText}>{props.text}</Text>
+      <Text style={styles.buttonText}>{props.text.replaceAll("_"," ")}</Text>
       <Text style={styles.buttonText}>{"> "}</Text>
     </Pressable>
   )

@@ -3,6 +3,10 @@ A web app for exercises related to discrete mathematics.
 
 ## Update
 
+update 2.2:
+- Chapters names showed "_" instead of " ". This bug is now fixed.
+- The WebView in the chapter page now has minimum 100vh height.
+
 update 2.1:
 - The json files containing the questions and answers are now structured differently. Changes have been made to the code to handle this new structure.
 

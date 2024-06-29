@@ -97,7 +97,7 @@ function BodyContent(props){
           fetchAnswer(changeAns, questionAnswerArr[curPos][1].slice(6));
         else changeAns(questionAnswerArr[curPos][1]);
       else changeAns("<p>Answer not available right now.</p>");
-      return null;
+      return  getWebView(`<div style="min-height: 100vh"></div>`);
     };
   }
   else return getWebView(props.text[0]);
@@ -135,6 +135,11 @@ function getWebView(text){
         body, p{
           font-family: "Dekko";
           font-size: 22px;
+        }
+
+        div{
+          max-width: 100%;
+          overflow-x: scroll;
         }
       </style>
       <head>
