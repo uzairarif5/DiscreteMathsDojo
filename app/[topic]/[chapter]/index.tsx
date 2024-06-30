@@ -45,31 +45,16 @@ const Topic = () => {
         }}
       />
       <BodyContent counter={counter} text={text}/>
-      <StyledButton changeCounter={changeCounter} counter={counter}/>
+      <NextButton changeCounter={changeCounter} counter={counter}/>
+      {counter > 0 ? <BackButton changeCounter={changeCounter} counter={counter}/> : null}
+      <View style={{width: "100%", height:40}}></View>
     </>
   );
 }
 
 export default Topic
 
-const StyledButton = (props) => {
 
-  let [fontsLoaded, fontError] = useFonts({
-    Acme_400Regular
-  });
-
-  if (!fontsLoaded && !fontError) return null;
-
-  return (
-    <View style={styles.buttonOutside}>
-      <Pressable onPress={()=>{props.changeCounter(val => val +1)}} style={styles.button}>
-        <Text style={styles.buttonText}>
-          {(props.counter > -1) ? "More Questions ->" : "Start Practice ->"}
-        </Text>
-      </Pressable>
-    </View>
-  )
-}
 
 function BodyContent(props){
   const [curAns, changeAns] = useState(null);
@@ -101,6 +86,42 @@ function BodyContent(props){
     };
   }
   else return getWebView(props.text[0]);
+}
+
+const NextButton = (props) => {
+
+  let [fontsLoaded, fontError] = useFonts({
+    Acme_400Regular
+  });
+
+  if (!fontsLoaded && !fontError) return null;
+
+  return (
+    <View style={styles.buttonOutside}>
+      <Pressable onPress={()=>{props.changeCounter(val => val +1)}} style={styles.button}>
+        <Text style={styles.buttonText}>
+          {(props.counter > -1) ? "Next Question ->" : "Start Practice ->"}
+        </Text>
+      </Pressable>
+    </View>
+  )
+}
+
+const BackButton = (props) => {
+
+  let [fontsLoaded, fontError] = useFonts({
+    Acme_400Regular
+  });
+
+  if (!fontsLoaded && !fontError) return null;
+
+  return (
+    <View>
+      <Pressable onPress={()=>{props.changeCounter(val => val -1)}} style={styles.button}>
+        <Text style={styles.buttonText}>{"<- Back"}</Text>
+      </Pressable>
+    </View>
+  )
 }
 
 function fetchAnswer(changeAns, link){
@@ -168,7 +189,7 @@ export const styles = StyleSheet.create({
   },
   button: {
     marginTop: 10,
-    marginBottom: 40,
+    marginBottom: 10,
     marginLeft: 30,
     marginRight: 30,
     borderColor: "black",
