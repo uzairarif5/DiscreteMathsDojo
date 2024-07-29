@@ -1,7 +1,13 @@
 # Discrete Maths Dojo
 A web app for exercises related to discrete mathematics.
 
+Versioning is done using "npm version [new-version] --git-tag-version false"
+
 ## Update
+
+update 2.4:
+- Anchor tag is now black.
+- fetch uses `no-store` cache when developing and `default` cache on build. 
 
 update 2.3:
 - In the "exercises" pages, changed "More Questions" to "Next Question".

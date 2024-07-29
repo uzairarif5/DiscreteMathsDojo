@@ -6,6 +6,29 @@ import { Acme_400Regular } from '@expo-google-fonts/acme';
 import { pageBackground } from '../../constants';
 import { WebView } from 'react-native-webview';
 
+var cacheType: "default" | "no-store";
+if((!process.env.NODE_ENV || process.env.NODE_ENV === 'development'))
+  cacheType = "no-store";
+else cacheType = "default";
+
+const stackScreenOptions = {
+  headerTitleStyle: {
+    fontFamily: "Acme_400Regular",
+    color:"black",
+    fontSize: 25
+  },
+  headerStyle: {
+    backgroundColor: pageBackground
+  },
+  headerTintColor:"#000",
+  headerBackTitleVisible: false,
+  contentStyle:{
+    borderTopColor: "black",
+    borderTopWidth: 2,
+    backgroundColor: pageBackground
+  }
+}
+
 const Topic = () => {
   const { topic, chapter } = useLocalSearchParams() as { topic: string, chapter: string};
   const [text, changeText] = useState(null); 
@@ -16,7 +39,10 @@ const Topic = () => {
   if (!fontsLoaded && !fontError) return null;
 
   if(!text) {
-    fetch(`https://raw.githubusercontent.com/uzairarif5/DiscreteMathsContent/master/${topic}/${chapter}.json?dateForNoCache=${Date.now()}`) 
+    fetch(
+      `https://raw.githubusercontent.com/uzairarif5/DiscreteMathsContent/master/${topic}/${chapter}.json`,
+      {cache: cacheType}
+    ) 
     .then(response => response.json())
     .then(res => changeText(res));
     return null;
@@ -24,26 +50,10 @@ const Topic = () => {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerTitle: chapter.replaceAll("_"," "),
-          headerTitleStyle: {
-            fontFamily: "Acme_400Regular",
-            color:"black",
-            fontSize: 25
-          },
-          headerStyle: {
-            backgroundColor: pageBackground
-          },
-          headerTintColor:"#000",
-          headerBackTitleVisible: false,
-          contentStyle:{
-            borderTopColor: "black",
-            borderTopWidth: 2,
-            backgroundColor: pageBackground
-          }
-        }}
-      />
+      <Stack.Screen options={{
+        ...stackScreenOptions,
+        headerTitle: chapter.replaceAll("_"," ")
+      }} />
       <BodyContent counter={counter} text={text}/>
       <NextButton changeCounter={changeCounter} counter={counter}/>
       {counter > 0 ? <BackButton changeCounter={changeCounter} counter={counter}/> : null}
@@ -54,10 +64,11 @@ const Topic = () => {
 
 export default Topic
 
-
+type bodyContentChangeAnsType = React.Dispatch<string | null>
+type bodyContentCurAnsStateType = [string  | null, bodyContentChangeAnsType]
 
 function BodyContent(props){
-  const [curAns, changeAns] = useState(null);
+  const [curAns, changeAns]: bodyContentCurAnsStateType = useState(null);
 
   useEffect(()=>{
     changeAns(null);
@@ -124,12 +135,13 @@ const BackButton = (props) => {
   )
 }
 
-function fetchAnswer(changeAns, link){
+function fetchAnswer(changeAns: bodyContentChangeAnsType, link: string){
   let linkPieces = link.split("/");
   fetch("https://www.deriveit.net/infoStore/getArticleContent", {
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body: JSON.stringify({topic: linkPieces[0], subTopic: linkPieces[1], article: linkPieces[2]}),
+    cache: cacheType
   })
   .then(res => res.json())
   .then(res => {
@@ -161,6 +173,10 @@ function getWebView(text){
         div{
           max-width: 100%;
           overflow-x: scroll;
+        }
+        a, a:visited{
+          color: #000; /* Fallback for older browsers */
+          color: rgba(0,0,0,0.5);
         }
       </style>
       <head>
