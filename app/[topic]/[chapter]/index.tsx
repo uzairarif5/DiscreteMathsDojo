@@ -31,20 +31,20 @@ const stackScreenOptions = {
 
 const Topic = () => {
   const { topic, chapter } = useLocalSearchParams() as { topic: string, chapter: string};
-  const [text, changeText] = useState(null); 
+  const [contentArr, changeCArr] = useState(null); 
   const [counter, changeCounter] = useState(-1);
 
   let [fontsLoaded, fontError] = useFonts({Dekko_400Regular, Acme_400Regular});
 
   if (!fontsLoaded && !fontError) return null;
 
-  if(!text) {
+  if(!contentArr) {
     fetch(
       `https://raw.githubusercontent.com/uzairarif5/DiscreteMathsContent/master/${topic}/${chapter}.json`,
       {cache: cacheType}
     ) 
     .then(response => response.json())
-    .then(res => changeText(res));
+    .then(res => changeCArr(res));
     return null;
   }
 
@@ -54,7 +54,7 @@ const Topic = () => {
         ...stackScreenOptions,
         headerTitle: chapter.replaceAll("_"," ")
       }} />
-      <BodyContent counter={counter} text={text}/>
+      <BodyContent counter={counter} contentArr={contentArr}/>
       <NextButton changeCounter={changeCounter} counter={counter}/>
       {counter > 0 ? <BackButton changeCounter={changeCounter} counter={counter}/> : null}
       <View style={{width: "100%", height:40}}></View>
@@ -67,16 +67,17 @@ export default Topic
 type bodyContentChangeAnsType = React.Dispatch<string | null>
 type bodyContentCurAnsStateType = [string  | null, bodyContentChangeAnsType]
 
-function BodyContent(props){
+function BodyContent(props: {counter: number, contentArr: [string | [string, string]]}){
   const [curAns, changeAns]: bodyContentCurAnsStateType = useState(null);
 
   useEffect(()=>{
     changeAns(null);
   }, [props.counter]);
 
+  let topicInfo = props.contentArr[0];
+  let questionAnswerArr = props.contentArr.slice(1);
+
   if(props.counter > -1){
-    let questionAnswerArr = props.text.slice(1);
-    //counter variable will always increment when next button is pressed
     let curPos = props.counter % questionAnswerArr.length;
     if(curAns){
       return getWebView(`
@@ -96,7 +97,7 @@ function BodyContent(props){
       return  getWebView(`<div style="min-height: 100vh"></div>`);
     };
   }
-  else return getWebView(props.text[0]);
+  else return getWebView(topicInfo);
 }
 
 const NextButton = (props) => {
