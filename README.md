@@ -1,9 +1,14 @@
 # Discrete Maths Dojo
 A web app for exercises related to discrete mathematics.
 
+Run using `npx expo start`.
+
 Versioning is done using "npm version [new-version] --git-tag-version false"
 
 ## Update
+
+update 2.6:
+- Links now open in web browser.
 
 update 2.5:
 - Made some naming changes to `[chapter]/index.tsx`, and added types to some variables.

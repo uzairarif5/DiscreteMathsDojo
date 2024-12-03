@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, Pressable } from 'react-native'
+import { View, StyleSheet, Text, Pressable, Linking } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useFonts, Dekko_400Regular } from '@expo-google-fonts/dekko';
@@ -188,6 +188,13 @@ function getWebView(text){
     </html>
     ` , baseUrl: ''}}
     style={{width:"100%", backgroundColor: pageBackground}}
+    onShouldStartLoadWithRequest={(event)=>{
+      if (event.url.slice(0, 4) === 'http'){
+        Linking.openURL(event.url);
+        return false;
+      }
+      else return true;
+    }}
   />
 }
 
