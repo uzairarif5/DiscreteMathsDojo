@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text, Pressable, Linking } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useFonts, Dekko_400Regular } from '@expo-google-fonts/dekko';
 import { Acme_400Regular } from '@expo-google-fonts/acme';
@@ -29,7 +29,7 @@ const stackScreenOptions = {
   }
 }
 
-const Topic = () => {
+export default function Topic(){
   const { topic, chapter } = useLocalSearchParams() as { topic: string, chapter: string};
   const [contentArr, changeCArr] = useState(null); 
   const [counter, changeCounter] = useState(-1);
@@ -62,55 +62,29 @@ const Topic = () => {
   );
 }
 
-export default Topic
-
-type bodyContentChangeAnsType = React.Dispatch<string | null>
-type bodyContentCurAnsStateType = [string  | null, bodyContentChangeAnsType]
-
-function BodyContent(props: {counter: number, contentArr: [string | [string, string]]}){
-  const [curAns, changeAns]: bodyContentCurAnsStateType = useState(null);
-
-  useEffect(()=>{
-    changeAns(null);
-  }, [props.counter]);
-
-  let topicInfo = props.contentArr[0];
-  let questionAnswerArr = props.contentArr.slice(1);
-
-  if(props.counter > -1){
-    let curPos = props.counter % questionAnswerArr.length;
-    if(curAns){
-      return getWebView(`
-        <div style="min-height: 85vh">
-          ${questionAnswerArr[curPos][0]}
-        </div>
-        <p style="font-size:26px"><u>Answer:</u></p>
-        ${curAns}
-      `);
-    }
-    else{
-      if (questionAnswerArr[curPos].length > 1)
-        if(questionAnswerArr[curPos][1].slice(0,5) === "FETCH")
-          fetchAnswer(changeAns, questionAnswerArr[curPos][1].slice(6));
-        else changeAns(questionAnswerArr[curPos][1]);
-      else changeAns("<p>Answer not available right now.</p>");
-      return  getWebView(`<div style="min-height: 100vh"></div>`);
-    };
-  }
-  else return getWebView(topicInfo);
+function BodyContent(props: {counter: number, contentArr: [string, ...[string, string][]]}){
+  if(props.counter > -1)
+    return <QASection
+      key={props.counter}
+      counter={props.counter}
+      questionAnswerArr={props.contentArr.slice(1) as [[string, string]]}
+    />
+  else
+    //otherwise render the first content (or the information section)
+    return getWebView(props.contentArr[0] as string); 
 }
 
 const NextButton = (props) => {
-
+  
   let [fontsLoaded, fontError] = useFonts({
     Acme_400Regular
   });
-
+  
   if (!fontsLoaded && !fontError) return null;
-
+  
   return (
     <View style={styles.buttonOutside}>
-      <Pressable onPress={()=>{props.changeCounter(val => val +1)}} style={styles.button}>
+      <Pressable onPress={()=>{props.changeCounter((val: number) => val +1)}} style={styles.button}>
         <Text style={styles.buttonText}>
           {(props.counter > -1) ? "Next Question ->" : "Start Practice ->"}
         </Text>
@@ -136,7 +110,36 @@ const BackButton = (props) => {
   )
 }
 
-function fetchAnswer(changeAns: bodyContentChangeAnsType, link: string){
+type bodyContentCurAnsStateType = [string  | null, bodyContentChangeAnsType]
+      
+function QASection(props: {counter: number, questionAnswerArr: [[string, string]]}){
+  const [curAns, changeAns]: bodyContentCurAnsStateType = useState(null);
+  let curPos = props.counter % props.questionAnswerArr.length;
+
+  //render 100vh empty div first (else case), and the answer will also be fetched
+  //render both q and a together (if case)
+  if (!curAns){
+    try{
+      if(props.questionAnswerArr[curPos][1].slice(0,5) === "FETCH")
+        fetchAnswerFromDeriveit(changeAns, props.questionAnswerArr[curPos][1].slice(6));
+      else changeAns(props.questionAnswerArr[curPos][1]);
+    }
+    catch { changeAns("<p>Error rendering answer, please report this.</p>"); }
+  }
+  
+  return getWebView(`
+    <div style="min-height: 85vh">
+      ${props.questionAnswerArr[curPos][0]}
+    </div>
+    <p style="font-size:26px"><u>Answer:</u></p>
+    ${curAns}
+  `);
+  
+}
+
+type bodyContentChangeAnsType = React.Dispatch<string | null>
+
+function fetchAnswerFromDeriveit(changeAns: bodyContentChangeAnsType, link: string){
   let linkPieces = link.split("/");
   fetch("https://www.deriveit.net/infoStore/getArticleContent", {
     method:"POST",
@@ -149,14 +152,14 @@ function fetchAnswer(changeAns: bodyContentChangeAnsType, link: string){
     let newArr = res[1].slice(1).map(elem => {
       if(elem[0] == "pmain") return `<p>${elem[1]}</p>`;
       else if (elem[0] == "displayFormula") return `<div>${elem[1]}</div>`;
-      else return "<p>ERROR RENDER THIS: please report</p>";
+      else return "<p>Error rendering this part, please report this.</p>";
     });
     changeAns(newArr.join(""));
   })
-  .catch(() => changeAns("<p>Answer not available right now.</p>"));
+  .catch(() => changeAns("<p>Error fetching the answer, please report this.</p>"));
 }
 
-function getWebView(text){
+function getWebView(text: string){
   return <WebView
     originWhitelist={['*']}
     source={{ html: `

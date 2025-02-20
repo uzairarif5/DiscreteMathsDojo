@@ -1,6 +1,6 @@
-import { View, StyleSheet, SafeAreaView, Platform, Pressable, Text } from 'react-native'
+import { View, StyleSheet, SafeAreaView, Platform, Pressable, Text, ScrollView } from 'react-native'
 import React, { useState } from 'react'
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { Image } from 'expo-image';
 import { useFonts, Acme_400Regular } from '@expo-google-fonts/acme';
 import { router } from 'expo-router';
@@ -9,14 +9,15 @@ import { pageBackground } from "../constants";
 const Topic = () => {
   const { topic } = useLocalSearchParams() as { topic:string};
   
-  let bodyContent = <>
+  let bodyContent = <ScrollView>
     <Image
       style={styles.imageStyle}
       contentFit='contain'
       source={{uri: `https://raw.githubusercontent.com/uzairarif5/DiscreteMathsContent/master/${topic}/image.png?dateForNoCache=${Date.now()}`}}
     />
     <LinksComp topic={topic} />
-  </>;
+    <View style={{width: "100%", height: 40}}></View>
+  </ScrollView>;
 
   return (
     Platform.OS === "ios" ?
@@ -44,7 +45,7 @@ function LinksComp(props){
   
   return <View style={styles.chaptersContainer}>
     {topicContent.map((item, num) => {
-      return <StyledButton text={item} route={`${props.topic}/${item}`} key={num}/>;
+      return <StyledButton text={item} route={`${props.topic}/${item.replaceAll("'","")}`} key={num}/>;
     })}
   </View>
 
@@ -72,17 +73,18 @@ export const styles = StyleSheet.create({
   main: {
     flex: 1,
     width:"100%",
-    position:"absolute",
+    position: "absolute",
     alignItems:"center",
     aspectRatio:1,
+    height:"100%"
   },
   imageStyle:{
     width:"100%",
     maxWidth: 800,
-    height: undefined,
     aspectRatio: 2000/1045,
     marginTop: 30,
-    marginBottom: 30
+    marginBottom: 30,
+    height: undefined
   },
   chaptersContainer:{
     width:"100%",

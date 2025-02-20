@@ -7,6 +7,9 @@ Versioning is done using "npm version [new-version] --git-tag-version false"
 
 ## Update
 
+update 2.7:
+- Made some coding structure changes.
+
 update 2.6:
 - Links now open in web browser.
 
