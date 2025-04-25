@@ -24,6 +24,7 @@ export default function Page() {
       <FormattedLink href={"/set_theory"}>Set Theory</FormattedLink>
       <FormattedLink href={"/combinatorics"}>Combinatorics</FormattedLink>
       <FormattedLink href={"/number_theory"}>Number Theory</FormattedLink>
+      <FormattedLink href={"/number_theory_part_2"}>Number Theory (part 2)</FormattedLink>
     </View>
     <StyledButton route={"/contact"} text={"Contact"} />
     <StyledButton route={"/other_stuff"} text={"Other Stuff From Creator"}/>

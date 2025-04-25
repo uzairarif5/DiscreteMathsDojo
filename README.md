@@ -7,8 +7,12 @@ Versioning is done using "npm version [new-version] --git-tag-version false"
 
 ## Update
 
+update 3.1:
+- Added a new chapter: `Number Theory (part 2)`
+
 update 2.7:
 - Made some coding structure changes.
+- Updated some packages.
 
 update 2.6:
 - Links now open in web browser.

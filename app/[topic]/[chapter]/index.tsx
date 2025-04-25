@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text, Pressable, Linking } from 'react-native'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useFonts, Dekko_400Regular } from '@expo-google-fonts/dekko';
 import { Acme_400Regular } from '@expo-google-fonts/acme';
@@ -111,34 +111,41 @@ const BackButton = (props) => {
 }
 
 type bodyContentCurAnsStateType = [string  | null, bodyContentChangeAnsType]
-      
 function QASection(props: {counter: number, questionAnswerArr: [[string, string]]}){
   const [curAns, changeAns]: bodyContentCurAnsStateType = useState(null);
+  const linkFlag = useRef(false);
   let curPos = props.counter % props.questionAnswerArr.length;
 
   //render 100vh empty div first (else case), and the answer will also be fetched
   //render both q and a together (if case)
   if (!curAns){
     try{
-      if(props.questionAnswerArr[curPos][1].slice(0,5) === "FETCH")
-        fetchAnswerFromDeriveit(changeAns, props.questionAnswerArr[curPos][1].slice(6));
-      else changeAns(props.questionAnswerArr[curPos][1]);
+      if(props.questionAnswerArr[curPos][1].slice(0,6) === "FETCH:"){
+        linkFlag.current = true
+        let pure_link = props.questionAnswerArr[curPos][1].slice("FETCH:".length);
+        fetchAnswerFromDeriveit(changeAns, pure_link);
+      }else changeAns(props.questionAnswerArr[curPos][1]);
     }
     catch { changeAns("<p>Error rendering answer, please report this.</p>"); }
+    return null;
   }
-  
+
+  let shortLink = null;
+  if(linkFlag.current){
+    let posOfLastSlash = props.questionAnswerArr[curPos][1].lastIndexOf("/") + 1;
+    shortLink = props.questionAnswerArr[curPos][1].substring(6, posOfLastSlash);
+  }
   return getWebView(`
     <div style="min-height: 85vh">
       ${props.questionAnswerArr[curPos][0]}
     </div>
     <p style="font-size:26px"><u>Answer:</u></p>
     ${curAns}
-  `);
+  `, shortLink);
   
 }
 
 type bodyContentChangeAnsType = React.Dispatch<string | null>
-
 function fetchAnswerFromDeriveit(changeAns: bodyContentChangeAnsType, link: string){
   let linkPieces = link.split("/");
   fetch("https://www.deriveit.net/infoStore/getArticleContent", {
@@ -159,7 +166,7 @@ function fetchAnswerFromDeriveit(changeAns: bodyContentChangeAnsType, link: stri
   .catch(() => changeAns("<p>Error fetching the answer, please report this.</p>"));
 }
 
-function getWebView(text: string){
+function getWebView(text: string, shortLink: string | null = null){
   return <WebView
     originWhitelist={['*']}
     source={{ html: `
@@ -186,6 +193,16 @@ function getWebView(text: string){
       <head>
         <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
         <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <script>
+          window.onload = ()=>{
+            for (let el of document.getElementsByTagName("a")){
+              if (el.href.indexOf("/") > -1)
+                el.href = "https://www.deriveit.net/${shortLink}" + el.href.slice(el.href.lastIndexOf("/"));
+              else
+                el.href = "https://www.deriveit.net/${shortLink}" + el.href;
+            }
+          }
+        </script>
       </head>
       <body>${text}</body>
     </html>
