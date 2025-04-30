@@ -7,8 +7,11 @@ Versioning is done using "npm version [new-version] --git-tag-version false"
 
 ## Update
 
+update 3.2:
+- Added scrip to change href of anchor elements from relative to absolute.
+
 update 3.1:
-- Added a new chapter: `Number Theory (part 2)`
+- Added a new chapter: `Number Theory (part 2)`.
 
 update 2.7:
 - Made some coding structure changes.

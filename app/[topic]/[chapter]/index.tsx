@@ -114,7 +114,8 @@ type bodyContentCurAnsStateType = [string  | null, bodyContentChangeAnsType]
 function QASection(props: {counter: number, questionAnswerArr: [[string, string]]}){
   const [curAns, changeAns]: bodyContentCurAnsStateType = useState(null);
   const linkFlag = useRef(false);
-  let curPos = props.counter % props.questionAnswerArr.length;
+  const curPos = props.counter % props.questionAnswerArr.length;
+  const pure_link = props.questionAnswerArr[curPos][1].slice("FETCH:".length);
 
   //render 100vh empty div first (else case), and the answer will also be fetched
   //render both q and a together (if case)
@@ -122,7 +123,6 @@ function QASection(props: {counter: number, questionAnswerArr: [[string, string]
     try{
       if(props.questionAnswerArr[curPos][1].slice(0,6) === "FETCH:"){
         linkFlag.current = true
-        let pure_link = props.questionAnswerArr[curPos][1].slice("FETCH:".length);
         fetchAnswerFromDeriveit(changeAns, pure_link);
       }else changeAns(props.questionAnswerArr[curPos][1]);
     }
@@ -130,18 +130,13 @@ function QASection(props: {counter: number, questionAnswerArr: [[string, string]
     return null;
   }
 
-  let shortLink = null;
-  if(linkFlag.current){
-    let posOfLastSlash = props.questionAnswerArr[curPos][1].lastIndexOf("/") + 1;
-    shortLink = props.questionAnswerArr[curPos][1].substring(6, posOfLastSlash);
-  }
   return getWebView(`
     <div style="min-height: 85vh">
       ${props.questionAnswerArr[curPos][0]}
     </div>
     <p style="font-size:26px"><u>Answer:</u></p>
     ${curAns}
-  `, shortLink);
+  `, pure_link);
   
 }
 
@@ -166,7 +161,7 @@ function fetchAnswerFromDeriveit(changeAns: bodyContentChangeAnsType, link: stri
   .catch(() => changeAns("<p>Error fetching the answer, please report this.</p>"));
 }
 
-function getWebView(text: string, shortLink: string | null = null){
+function getWebView(text: string, link: string | null = null){
   return <WebView
     originWhitelist={['*']}
     source={{ html: `
@@ -194,12 +189,19 @@ function getWebView(text: string, shortLink: string | null = null){
         <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
         <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
         <script>
+          //Split the website link and delete empty strings
+          const linkSplit = "${link}".split("/").filter(item => item);
           window.onload = ()=>{
+            const listEl = document.getElementById("testList");
             for (let el of document.getElementsByTagName("a")){
-              if (el.href.indexOf("/") > -1)
-                el.href = "https://www.deriveit.net/${shortLink}" + el.href.slice(el.href.lastIndexOf("/"));
-              else
-                el.href = "https://www.deriveit.net/${shortLink}" + el.href;
+              if(el.attributes.href.nodeValue.substring(0,4) === "www.") continue;
+              let valueSplit = el.attributes.href.nodeValue.split("/").filter(item => item && item != ".." && item != ".");
+              let vsLen = valueSplit.length;
+              let cloneLinkSplit = [...linkSplit];
+              let clsLen = cloneLinkSplit.length;
+              for(let i = 0; i < vsLen; i++)
+                cloneLinkSplit[clsLen-vsLen+i] = valueSplit[i];
+              el.setAttribute("href", "https://www.deriveit.net/" + cloneLinkSplit.join("/"));
             }
           }
         </script>
