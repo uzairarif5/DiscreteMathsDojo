@@ -1,5 +1,6 @@
-import { View, StyleSheet, SafeAreaView, Platform, Pressable, Text, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import { View, StyleSheet, Platform, Pressable, Text, ScrollView } from 'react-native'
+import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { Image } from 'expo-image';
 import { useFonts, Acme_400Regular } from '@expo-google-fonts/acme';

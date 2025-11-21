@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, Platform, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Platform } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useFonts, Acme_400Regular } from '@expo-google-fonts/acme';
 
 const otherStuff = () => {

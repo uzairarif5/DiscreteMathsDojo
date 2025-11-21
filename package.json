@@ -1,6 +1,6 @@
 {
   "name": "discretemathsdojo",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "main": "expo-router/entry",
   "author": "Uzair Arif",
   "scripts": {

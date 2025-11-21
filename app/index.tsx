@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, SafeAreaView, Platform, Pressable } from "react-native";
+import { StyleSheet, Text, View, Platform, Pressable } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
 import { useFonts, Acme_400Regular } from '@expo-google-fonts/acme';
 import { Dekko_400Regular } from '@expo-google-fonts/dekko';

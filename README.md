@@ -6,6 +6,9 @@ An app for exercises related to discrete mathematics.
 
 Versioning is done using "npm version [new-version] --git-tag-version false"
 
+update 3.4:
+- `SafeAreaView` is now imported frpm `react-native-safe-area-context`.
+
 update 3.3:
 - Updated some of the packages.
 - In the exercise page, the back button is just "<" instead of "< index".
