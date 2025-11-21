@@ -1,14 +1,17 @@
 # Discrete Maths Dojo
-A web app for exercises related to discrete mathematics.
 
-Run using `npx expo start`.
+An app for exercises related to discrete mathematics.
+
+## Updates
 
 Versioning is done using "npm version [new-version] --git-tag-version false"
 
-## Update
+update 3.3:
+- Updated some of the packages.
+- In the exercise page, the back button is just "<" instead of "< index".
 
 update 3.2:
-- Added scrip to change href of anchor elements from relative to absolute.
+- Added script to change href of anchor elements from relative to absolute.
 
 update 3.1:
 - Added a new chapter: `Number Theory (part 2)`.

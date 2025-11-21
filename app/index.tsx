@@ -5,6 +5,8 @@ import { Dekko_400Regular } from '@expo-google-fonts/dekko';
 import { fontColor1, fontColor2, pageBackground } from "./constants";
 import { router } from 'expo-router';
 
+//Run using `npx expo start`.
+
 export default function Page() {
 
   let [fontsLoaded, fontError] = useFonts({

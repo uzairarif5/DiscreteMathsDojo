@@ -13,7 +13,7 @@ const Topic = () => {
     <Image
       style={styles.imageStyle}
       contentFit='contain'
-      source={{uri: `https://raw.githubusercontent.com/uzairarif5/DiscreteMathsContent/master/${topic}/image.png?dateForNoCache=${Date.now()}`}}
+      source={{uri: `https://raw.githubusercontent.com/uzairarif5/DiscreteMathsContent/master/${topic}/image.png?dateForNoCache=${__DEV__ ? Date.now() : 0}`}}
     />
     <LinksComp topic={topic} />
     <View style={{width: "100%", height: 40}}></View>
@@ -30,7 +30,7 @@ const Topic = () => {
   );
 }
 
-export default Topic
+export default Topic;
 
 function LinksComp(props){
   const [topicContent, changeTC] = useState(null);

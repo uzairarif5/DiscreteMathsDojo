@@ -52,7 +52,9 @@ export default function Topic(){
     <>
       <Stack.Screen options={{
         ...stackScreenOptions,
-        headerTitle: chapter.replaceAll("_"," ")
+        headerTitle: chapter.replaceAll("_"," "),
+        headerBackTitle: "|",
+        headerBackTitleStyle: {fontSize: 1}
       }} />
       <BodyContent counter={counter} contentArr={contentArr}/>
       <NextButton changeCounter={changeCounter} counter={counter}/>
@@ -158,7 +160,10 @@ function fetchAnswerFromDeriveit(changeAns: bodyContentChangeAnsType, link: stri
     });
     changeAns(newArr.join(""));
   })
-  .catch(() => changeAns("<p>Error fetching the answer, please report this.</p>"));
+  .catch(() => {
+    if (__DEV__) console.log(`Cannot fetch from ${linkPieces[0]}/${linkPieces[1]}/${linkPieces[2]}`);
+    changeAns("<p>Error fetching the answer, please report this.</p>");
+  });
 }
 
 function getWebView(text: string, link: string | null = null){
