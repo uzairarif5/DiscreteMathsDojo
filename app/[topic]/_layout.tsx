@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { pageBackground } from '../constants';
+import React from 'react';
 
 export default function TopicLayout() {
 

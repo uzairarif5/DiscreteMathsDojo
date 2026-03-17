@@ -2,9 +2,14 @@
 
 An app for exercises related to discrete mathematics.
 
+Run using `npx expo start`.
+
 ## Updates
 
 Versioning is done using "npm version [new-version] --git-tag-version false"
+
+update 3.5:
+- Updated packages.
 
 update 3.4:
 - `SafeAreaView` is now imported frpm `react-native-safe-area-context`.

@@ -1,3 +1,4 @@
+import React from "react";
 
 export const pageBackground = "#D39F63";
 export const fontColor1 = "#AF2727";

@@ -5,8 +5,7 @@ import { useFonts, Acme_400Regular } from '@expo-google-fonts/acme';
 import { Dekko_400Regular } from '@expo-google-fonts/dekko';
 import { fontColor1, fontColor2, pageBackground } from "./constants";
 import { router } from 'expo-router';
-
-//Run using `npx expo start`.
+import React from "react";
 
 export default function Page() {
 
@@ -115,10 +114,7 @@ const styles = StyleSheet.create({
     marginRight: 25,
     marginTop: 10,
     marginBottom: 10,
-    shadowColor: "black",
-    shadowOffset: {width: 2, height: 2},
-    shadowOpacity: 1,
-    shadowRadius: 0,
+    boxShadow: [{color: "black", offsetX: 2, offsetY: 2}],
     backgroundColor: pageBackground,
     padding: 3,
   },

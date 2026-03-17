@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Platform } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFonts, Acme_400Regular } from '@expo-google-fonts/acme';
+import React from 'react';
 
 const contact = () => {
   let [fontsLoaded, fontError] = useFonts({
